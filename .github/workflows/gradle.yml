@@ -27,21 +27,3 @@ jobs:
         with:
           name: CommandPrompter
           path: build/libs
-
-  publish:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2.4.0
-      - name: Set up JDK
-        uses: actions/setup-java@v2.5.0
-        with:
-          distribution: temurin
-          java-version: 21
-      - name: Upload Release Artifact
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run:
-          gh release upload ${{ env.LATEST_TAG }} build/libs/*.jar
-
-
