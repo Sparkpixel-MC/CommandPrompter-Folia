@@ -28,6 +28,7 @@ import com.cyr1en.commandprompter.CommandPrompter;
 import com.cyr1en.commandprompter.prompt.PromptContext;
 import com.cyr1en.commandprompter.prompt.PromptManager;
 import com.cyr1en.commandprompter.prompt.PromptParser;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ public interface Prompt {
     /**
      * Method that sends the prompt.
      */
-    void sendPrompt();
+    void sendPrompt(ScheduledTask scheduledTask);
 
     /**
      * Accessor for the {@link PromptContext}.
@@ -97,4 +98,5 @@ public interface Prompt {
      * @param sanitize true if inputs should be sanitized
      */
     void setInputSanitization(boolean sanitize);
+
 }

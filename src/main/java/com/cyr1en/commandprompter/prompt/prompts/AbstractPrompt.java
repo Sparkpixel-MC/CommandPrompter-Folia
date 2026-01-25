@@ -32,6 +32,7 @@ import com.cyr1en.commandprompter.prompt.PromptManager;
 import com.cyr1en.commandprompter.prompt.PromptParser;
 import com.cyr1en.commandprompter.prompt.validators.NoopValidator;
 import com.cyr1en.commandprompter.util.Util;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
 import java.util.List;
 
@@ -68,7 +69,7 @@ public abstract class AbstractPrompt implements Prompt {
     }
 
     @Override
-    public abstract void sendPrompt();
+    public abstract void sendPrompt(ScheduledTask scheduledTask);
 
     @Override
     public PromptContext getContext() {

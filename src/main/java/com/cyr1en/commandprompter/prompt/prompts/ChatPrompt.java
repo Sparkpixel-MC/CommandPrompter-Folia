@@ -31,6 +31,7 @@ import com.cyr1en.commandprompter.prompt.PromptManager;
 import com.cyr1en.commandprompter.prompt.PromptParser;
 import com.cyr1en.commandprompter.util.ServerUtil;
 import com.cyr1en.commandprompter.util.unsafe.PvtFieldMutator;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
@@ -53,7 +54,7 @@ public class ChatPrompt extends AbstractPrompt {
         super(plugin, context, prompt, args);
     }
 
-    public void sendPrompt() {
+    public void sendPrompt(ScheduledTask scheduledTask) {
         List<String> parts = Arrays.stream(getPrompt().split("\\{br}")).map(String::trim).toList();
         if (ServerUtil.BUNGEE_CHAT_AVAILABLE())
             sendWithChatAPI(parts);
@@ -171,7 +172,7 @@ public class ChatPrompt extends AbstractPrompt {
                     .setPromptedPlayer(player)
                     .setContent(msg).build();
 
-            Bukkit.getScheduler().runTask(plugin, () -> manager.processPrompt(ctx));
+            Bukkit.getGlobalRegionScheduler().run(plugin, scheduledTask -> manager.processPrompt(ctx));
         }
     }
 

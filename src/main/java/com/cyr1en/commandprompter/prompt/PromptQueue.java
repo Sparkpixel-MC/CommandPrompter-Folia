@@ -110,7 +110,7 @@ public class PromptQueue extends LinkedList<Prompt> {
                     return;
 
                 if (pcm.delayTicks() > 0)
-                    plugin.getServer().getScheduler().runTaskLater(plugin, () -> execPCM(pcm, sender),
+                    plugin.getServer().getGlobalRegionScheduler().runDelayed(plugin, scheduledTask -> execPCM(pcm, sender),
                             pcm.delayTicks());
                 else
                     execPCM(pcm, sender);

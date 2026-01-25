@@ -64,6 +64,6 @@ public class CarbonChatHook extends BaseHook implements Listener {
                 .setCommandSender(player)
                 .setPromptedPlayer(player)
                 .setContent(serializedMsg).build();
-        Bukkit.getScheduler().runTask(getPlugin(), () -> promptManager.processPrompt(ctx));
+        Bukkit.getGlobalRegionScheduler().run(getPlugin(), scheduledTask -> promptManager.processPrompt(ctx));
     }
 }

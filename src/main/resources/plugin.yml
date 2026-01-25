@@ -3,6 +3,7 @@ version: ${projectVersion}
 author: ${projectAuthor}
 description: ${projectDescription}
 softdepend: [SuperVanish,PremiumVanish, PlaceholderAPI, CarbonChat, Towny, HuskTowns]
+folia-supported: true
 
 main: ${projectEntry}
 api-version: 1.13

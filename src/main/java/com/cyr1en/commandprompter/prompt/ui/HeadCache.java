@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class HeadCache implements Listener {
 
@@ -225,7 +226,7 @@ public class HeadCache implements Listener {
         var cacheDelay = plugin.getPromptConfig().cacheDelay();
         logger.debug("Caching Delay: %s", cacheDelay);
 
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+        Bukkit.getAsyncScheduler().runDelayed(plugin, scheduledTask -> {
             if (isVanished(e.getPlayer())) {
                 logger.debug("Player is vanished");
                 return;
@@ -233,7 +234,7 @@ public class HeadCache implements Listener {
 
             HEAD_CACHE.getUnchecked(e.getPlayer());
             logger.debug("Cache status for %s: %s", e.getPlayer(), getHeadFor(e.getPlayer()).isPresent());
-        }, cacheDelay);
+        }, cacheDelay, TimeUnit.MINUTES);
     }
 
     private boolean isVanished(Player player) {

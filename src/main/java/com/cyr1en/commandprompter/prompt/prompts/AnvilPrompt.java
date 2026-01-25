@@ -29,6 +29,7 @@ import com.cyr1en.commandprompter.prompt.PromptContext;
 import com.cyr1en.commandprompter.prompt.PromptParser;
 import com.cyr1en.commandprompter.util.ServerUtil;
 import com.cyr1en.commandprompter.util.Util;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -55,7 +56,7 @@ public class AnvilPrompt extends AbstractPrompt {
     }
 
     @Override
-    public void sendPrompt() {
+    public void sendPrompt(ScheduledTask scheduledTask) {
         List<String> parts = Arrays.asList(getPrompt().split("\\{br}"));
         var item = makeAnvilItem(parts);
         var resultItem = makeResultItem(parts);

@@ -35,6 +35,7 @@ import com.cyr1en.commandprompter.prompt.ui.inventory.ControlPane;
 import com.cyr1en.commandprompter.util.Util;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -213,7 +214,7 @@ public class PlayerUIPrompt extends AbstractPrompt {
     }
 
     @Override
-    public void sendPrompt() {
+    public void sendPrompt(ScheduledTask task) {
         var p = getContext().getPromptedPlayer();
 
         var missingCached = Bukkit.getOnlinePlayers().stream().filter(player -> !vanishHook.isInvisible(player))
@@ -222,7 +223,7 @@ public class PlayerUIPrompt extends AbstractPrompt {
             getPlugin().getPluginLogger().debug("Missing heads in cache, rebuilding before sending...");
             headCache.reBuildCache().thenAccept(cache -> {
                 getPlugin().getPluginLogger().debug("Rebuilt cache!");
-                Bukkit.getScheduler().runTask(getPlugin(), () -> send(p));
+                Bukkit.getGlobalRegionScheduler().run(getPlugin(), scheduledTask -> send(p));
             });
         } else {
             send(p);

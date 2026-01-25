@@ -37,7 +37,6 @@ import com.cyr1en.commandprompter.prompt.prompts.ChatPrompt;
 import com.cyr1en.commandprompter.prompt.ui.HeadCache;
 import com.cyr1en.commandprompter.util.ServerUtil;
 import com.cyr1en.kiso.mc.I18N;
-import com.cyr1en.kiso.mc.UpdateChecker;
 import com.cyr1en.kiso.utils.SRegex;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -59,7 +58,6 @@ public class CommandPrompter extends JavaPlugin {
     private PluginLogger logger;
     private CommandListener commandListener;
     private I18N i18n;
-    private UpdateChecker updateChecker;
     private PromptManager promptManager;
     private PluginMessenger messenger;
     private HeadCache headCache;
@@ -82,14 +80,13 @@ public class CommandPrompter extends JavaPlugin {
         
         messenger = new PluginMessenger(config.promptPrefix());
 
-        setupUpdater();
         initPromptSystem();
         setupCommands();
 
         instance = this;
         Bukkit.getPluginManager().registerEvents(new CommandSendListener(this), this);
 
-        Bukkit.getScheduler().runTaskLater(this, () -> {
+        Bukkit.getGlobalRegionScheduler().runDelayed(this, scheduledTask -> {
             hookContainer = new HookContainer(this);
             hookContainer.initHooks();
             headCache.registerFilters();
@@ -103,9 +100,6 @@ public class CommandPrompter extends JavaPlugin {
         commandAPIWrapper.onDisable();
         if (promptManager != null)
             promptManager.clearPromptRegistry();
-
-        if (Objects.nonNull(updateChecker) && !updateChecker.isDisabled())
-            HandlerList.unregisterAll(updateChecker);
     }
 
     private void initPromptSystem() {
@@ -133,20 +127,6 @@ public class CommandPrompter extends JavaPlugin {
 
     private void setupCommands() {
         commandAPIWrapper.registerCommands();
-    }
-
-    private void setupUpdater() {
-        updateChecker = new UpdateChecker(this, 47772);
-        if (updateChecker.isDisabled())
-            return;
-        Bukkit.getServer().getScheduler().runTaskAsynchronously(this, () -> {
-            if (updateChecker.newVersionAvailable())
-                logger.info(SRegex.ANSI_GREEN + "A new update is available! (" +
-                        updateChecker.getCurrVersion().asString() + ")" + SRegex.ANSI_RESET);
-            else
-                logger.info("No update was found.");
-        });
-        Bukkit.getPluginManager().registerEvents(updateChecker, this);
     }
 
     public I18N getI18N() {
@@ -182,7 +162,6 @@ public class CommandPrompter extends JavaPlugin {
         headCache.reBuildCache();
         promptManager.getParser().initRegex();
         ChatPrompt.DefaultListener.setPriority(this);
-        setupUpdater();
         if (clean)
             promptManager.clearPromptRegistry();
 
@@ -200,9 +179,5 @@ public class CommandPrompter extends JavaPlugin {
 
     public PromptConfig getPromptConfig() {
         return promptConfig;
-    }
-
-    public UpdateChecker getUpdateChecker() {
-        return updateChecker;
     }
 }

@@ -33,6 +33,7 @@ import com.cyr1en.commandprompter.prompt.prompts.SignPrompt;
 import com.cyr1en.commandprompter.util.ServerUtil;
 import com.cyr1en.commandprompter.util.Util;
 import com.cyr1en.kiso.mc.Version;
+import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -63,7 +64,7 @@ public class PromptManager extends HashMap<String, Class<? extends Prompt>> {
     private final CommandPrompter plugin;
     private final PromptRegistry promptRegistry;
     private final PromptParser promptParser;
-    private final BukkitScheduler scheduler;
+    private final GlobalRegionScheduler scheduler;
 
     private static final HashMap<Class<? extends Prompt>, Version> supportTable;
 
@@ -84,7 +85,7 @@ public class PromptManager extends HashMap<String, Class<? extends Prompt>> {
         this.plugin = commandPrompter;
         this.promptRegistry = new PromptRegistry(plugin);
         this.promptParser = new PromptParser(this);
-        this.scheduler = Bukkit.getScheduler();
+        this.scheduler = Bukkit.getGlobalRegionScheduler();
     }
 
     public void registerPrompts() {
@@ -116,7 +117,7 @@ public class PromptManager extends HashMap<String, Class<? extends Prompt>> {
     public void parse(PromptContext context) {
         var queueHash = promptParser.parsePrompts(context);
         var timeout = plugin.getConfiguration().promptTimeout();
-        scheduler.runTaskLater(plugin, () ->
+        scheduler.runDelayed(plugin, scheduledTask ->
                 cancel(context.getPromptedPlayer(), queueHash, CancelReason.Timeout), 20L * timeout);
     }
 
@@ -131,10 +132,9 @@ public class PromptManager extends HashMap<String, Class<? extends Prompt>> {
 
         if (!queue.isEmpty()) {
             var prompt = Objects.requireNonNull(queue.peek());
-            Bukkit.getScheduler().runTaskLater(plugin, prompt::sendPrompt, 2L);
+            Bukkit.getGlobalRegionScheduler().runDelayed(plugin, prompt::sendPrompt, 2L);
             plugin.getPluginLogger().debug("Sent %s to %s", prompt.getClass().getSimpleName(), sender.getName());
         } else if (queue.containsPCM()) {
-            // This means queue is empty but contains PCM. If it does, we just dispatch it.
             dispatchQueue(sender, queue);
         }
 
@@ -249,7 +249,7 @@ public class PromptManager extends HashMap<String, Class<? extends Prompt>> {
             var filtered = queue.getPostCommandMetas().stream().filter(PromptQueue.PostCommandMeta::isOnCancel);
             filtered.forEach(pcm -> {
                 plugin.getPluginLogger().debug("Dispatching PCM: %s", pcm);
-                Bukkit.getScheduler().runTaskLater(plugin, () -> queue.execPCM(pcm, (Player) sender), pcm.delayTicks());
+                Bukkit.getGlobalRegionScheduler().runDelayed(plugin, scheduledTask -> queue.execPCM(pcm, (Player) sender), pcm.delayTicks());
             });
         }
 

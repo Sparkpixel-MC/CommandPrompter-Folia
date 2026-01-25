@@ -8,6 +8,7 @@ import com.cyr1en.commandprompter.util.Util;
 import com.cyr1en.kiso.utils.FastStrings;
 import de.rapha149.signgui.*;
 import de.rapha149.signgui.exception.SignGUIVersionException;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -29,7 +30,7 @@ public class SignPrompt extends AbstractPrompt {
     }
 
     @Override
-    public void sendPrompt() {
+    public void sendPrompt(ScheduledTask scheduledTask) {
         List<String> parts = Arrays.asList(getPrompt().split("\\{br}"));
         checkMultiArg(parts);
         getPlugin().getPluginLogger().debug("Is Multi-Arg: " + isMultiArg);
