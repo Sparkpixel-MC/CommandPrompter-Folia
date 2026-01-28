@@ -52,12 +52,17 @@ public class Dispatcher {
      * @param command command that would be dispatched.
      */
     public static void dispatchCommand(Plugin plugin, Player sender, String command) {
+        if (plugin == null || !plugin.isEnabled()) {
+            return;
+        }
+
         final String checked = command.codePointAt(0) == 0x2F ? command : "/" + command;
-        new BukkitRunnable() {
-            public void run() {
+
+        Bukkit.getGlobalRegionScheduler().run(plugin, scheduledTask -> {
+            if (sender != null && sender.isOnline()) {
                 sender.chat(checked);
             }
-        }.runTask(plugin);
+        });
     }
 
     /**
